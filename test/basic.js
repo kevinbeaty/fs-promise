@@ -51,7 +51,7 @@ describe('basic', function(){
       read.pipe(write);
       return promise;
     }).then(function(){
-      return fsp.readFile(file('hello2', {encoding:'utf8'}));
+      return fsp.readFile(file('hello2'), {encoding:'utf8'});
     }).then(function(contents){
       assert.equal(contents, 'hello world');
     });
