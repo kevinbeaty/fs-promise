@@ -17,11 +17,22 @@ describe('basic', function(){
 
   it('should create files and readdir', function(){
     return fsp.createFile(file('hello')).then(readtmp).then(function(files){
-        assert.deepEqual(files.sort(), ['hello']);
-        return fsp.createFile(file('world'));
-      }).then(readtmp).then(function(files){
-        assert.deepEqual(files.sort(), ['hello', 'world']);
-      });
+      assert.deepEqual(files.sort(), ['hello']);
+      return fsp.createFile(file('world'));
+    }).then(readtmp).then(function(files){
+      assert.deepEqual(files.sort(), ['hello', 'world']);
+    });
+  });
+
+  it('should pass through Sync as value', function(){
+    return fsp.createFile(file('hello')).then(function(files){
+      assert(fsp.existsSync(file('hello')));
+      assert(!fsp.existsSync(file('world')));
+      return fsp.createFile(file('world'));
+    }).then(readtmp).then(function(files){
+      assert(fsp.existsSync(file('hello')));
+      assert(fsp.existsSync(file('world')));
+    });
   });
 });
 
@@ -33,8 +44,7 @@ function file(){
 
 function existstmp(shouldExist){
   return function(){
-    return fsp.exists(testdir)
-      .then(function(exists){
+    return fsp.exists(testdir).then(function(exists){
         assert.equal(exists, shouldExist);
       });
   };

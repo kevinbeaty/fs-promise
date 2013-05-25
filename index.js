@@ -3,7 +3,8 @@
 var fs,
     Promise = require('promise'),
     slice = Array.prototype.slice,
-    noError = ['exists', 'existsSync'];
+    noError = /exists/,
+    returnValue = /Sync$/;
 
 try {
   fs = require('fs-extra');
@@ -18,10 +19,12 @@ try {
 Object.keys(fs).forEach(function(key) {
   var func = fs[key];
   if (typeof func == 'function')
-    if(noError.indexOf(key) < 0){
-      exports[key] = promise(func);
-    } else {
+    if(returnValue.test(key)){
+      exports[key] = fs[key];
+    } else if(noError.test(key)){
       exports[key] = promiseWithoutError(func);
+    } else {
+      exports[key] = promise(func);
     }
 });
 
