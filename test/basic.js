@@ -4,6 +4,7 @@
 var fsp = require('..'),
     path = require('path'),
     assert = require('assert'),
+    Promise = require('promise'),
     testdir = path.join(__dirname, 'tmp');
 
 describe('basic', function(){
@@ -32,6 +33,27 @@ describe('basic', function(){
     }).then(readtmp).then(function(files){
       assert(fsp.existsSync(file('hello')));
       assert(fsp.existsSync(file('world')));
+    });
+  });
+
+  it('should copy with pipe read/write stream', function(){
+    return fsp.writeFile(file('hello1'), 'hello world').then(function(){
+      return fsp.readFile(file('hello1'), {encoding:'utf8'});
+    }).then(function(contents){
+      assert.equal(contents, 'hello world');
+      var read = fsp.createReadStream(file('hello1')),
+          write = fsp.createWriteStream(file('hello2')),
+          promise = new Promise(function(resolve, reject){
+            read.on('end', resolve);
+            write.on('error', reject);
+            read.on('error', reject);
+          });
+      read.pipe(write);
+      return promise;
+    }).then(function(){
+      return fsp.readFile(file('hello2', {encoding:'utf8'}));
+    }).then(function(contents){
+      assert.equal(contents, 'hello world');
     });
   });
 });

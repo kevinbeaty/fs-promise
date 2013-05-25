@@ -4,7 +4,7 @@ var fs,
     Promise = require('promise'),
     slice = Array.prototype.slice,
     noError = /exists/,
-    returnValue = /Sync$/;
+    returnValue = /Sync$|watch|(Read|Write)Stream$|^Stats$/;
 
 try {
   fs = require('fs-extra');
