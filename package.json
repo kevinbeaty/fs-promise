@@ -1,6 +1,6 @@
 {
   "name": "fs-promise",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Filesystem methods as promises, with optional fs-extra and fs-graceful dependencies",
   "main": "index.js",
   "scripts": {
