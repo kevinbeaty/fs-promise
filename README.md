@@ -1,6 +1,6 @@
 # fs-promise
 
-[![Build Status](https://secure.travis-ci.org/kevinbeaty/fs-promise.png)](http://travis-ci.org/kevinbeaty/fs-promise)
+[![Build Status](https://secure.travis-ci.org/kevinbeaty/fs-promise.svg)](http://travis-ci.org/kevinbeaty/fs-promise)
 
 Proxies all async `fs` methods exposing them as Promises/A+ compatible promises (when, Q, etc).
 Passes all sync methods through as values.
