@@ -4,7 +4,7 @@
 var fsp = require('..'),
     path = require('path'),
     assert = require('assert'),
-    Promise = require('promise'),
+    Prom = require('any-promise'),
     testdir = path.join(__dirname, 'tmp');
 
 describe('basic', function(){
@@ -43,7 +43,7 @@ describe('basic', function(){
       assert.equal(contents, 'hello world');
       var read = fsp.createReadStream(file('hello1')),
           write = fsp.createWriteStream(file('hello2')),
-          promise = new Promise(function(resolve, reject){
+          promise = new Prom(function(resolve, reject){
             read.on('end', resolve);
             write.on('error', reject);
             read.on('error', reject);

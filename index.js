@@ -1,7 +1,7 @@
 'use strict';
 
 var fs,
-    Promise = require('promise'),
+    Prom = require('any-promise'),
     slice = Array.prototype.slice,
     noError = /exists/,
     returnValue = /Sync$|watch|(Read|Write)Stream$|^Stats$/;
@@ -31,7 +31,7 @@ Object.keys(fs).forEach(function(key) {
 function promise(func){
   return function(){
     var args = slice.call(arguments);
-    return new Promise(function(resolve, reject){
+    return new Prom(function(resolve, reject){
       args.push(function(err, res){
         if(err) reject(err);
         else resolve(res);
@@ -44,7 +44,7 @@ function promise(func){
 function promiseWithoutError(func){
   return function(){
     var args = slice.call(arguments);
-    return new Promise(function(resolve){
+    return new Prom(function(resolve){
       args.push(resolve);
       func.apply(fs, args);
     });
