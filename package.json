@@ -19,7 +19,7 @@
   "author": "Kevin Beaty",
   "license": "MIT",
   "dependencies": {
-    "any-promise": "0.0.1"
+    "any-promise": "0.0.2"
   },
   "devDependencies": {
     "mocha": "~2.0.1",
