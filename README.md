@@ -19,6 +19,26 @@ fsp.writeFile(file('hello1'), 'hello world')
   .then(function(contents){});
 ```
 
+## Usage
+
+Attempts to load libraries in the following order. The first successful require will be proxied to a Promise based implementation.
+
+- [`fs-extra`](https://github.com/jprichardson/node-fs-extra)
+- [`graceful-fs`](https://github.com/isaacs/node-graceful-fs)
+- `fs` from standard library
+
+Also auto-detects a Promise implementation using [`any-promise`][3]. If you have a preferred implementation, or are working in an environment without a global ES6 Promise implementation, you must explicitly install and it will be detected.
+
+Typical installation:
+
+```bash
+$ npm install --save fs-extra
+$ npm install --save promise
+$ npm install --save fs-promise
+```
+
+Note that `fs-extra` depends on `graceful-fs`, so you would get the benefits of both libraries.
+
 [1]: https://github.com/isaacs/node-graceful-fs
 [2]: https://www.npmjs.org/package/fs-extra
 [3]: https://github.com/kevinbeaty/any-promise
