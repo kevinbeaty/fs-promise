@@ -3,6 +3,10 @@
   "version": "0.3.1",
   "description": "Filesystem methods as promises, with optional fs-extra and fs-graceful dependencies",
   "main": "index.js",
+  "browser": {
+    "fs-extra": false,
+    "graceful-fs": false
+  },
   "scripts": {
     "test": "mocha"
   },
