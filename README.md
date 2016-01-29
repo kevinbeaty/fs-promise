@@ -2,12 +2,13 @@
 
 [![Build Status](https://secure.travis-ci.org/kevinbeaty/fs-promise.svg)](http://travis-ci.org/kevinbeaty/fs-promise)
 
-Proxies all async `fs` methods exposing them as Promises/A+ compatible promises (when, Q, etc).
+Proxies all async `fs` methods exposing them as ES 2015 (ES6) compatible promises.
+
 Passes all sync methods through as values.
 
 Also exposes to [graceful-fs][1] and/or [fs-extra][2] methods if they are installed.
 
-Also works with [any-promise][3] library (a pollyfill, es6-promise, promise, native-promise-only, bluebird, rsvp, when, q).
+Uses [any-promise][3] to load preferred `Promise` implementation.
 
 ```javascript
 var fsp = require('fs-promise');
@@ -27,13 +28,12 @@ Attempts to load libraries in the following order. The first successful require 
 - [`graceful-fs`](https://github.com/isaacs/node-graceful-fs)
 - `fs` from standard library
 
-Also auto-detects a Promise implementation using [`any-promise`][3]. If you have a preferred implementation, or are working in an environment without a global ES6 Promise implementation, you must explicitly install and it will be detected.
+Detects a `Promise` implementation using [`any-promise`][3]. If you have a preferred implementation, or are working in an environment without a global implementation, you must explicitly register a `Promise` implementation and it will be used. See [`any-promise`][3] for details.
 
 Typical installation:
 
 ```bash
 $ npm install --save fs-extra
-$ npm install --save promise
 $ npm install --save fs-promise
 ```
 
