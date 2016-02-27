@@ -1,7 +1,7 @@
 {
   "name": "fs-promise",
   "version": "0.4.1",
-  "description": "Filesystem methods as promises, with optional fs-extra and fs-graceful dependencies",
+  "description": "Filesystem methods as promises with fs-extra",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -19,7 +19,8 @@
   "author": "Kevin Beaty",
   "license": "MIT",
   "dependencies": {
-    "any-promise": "^1.0.0"
+    "any-promise": "^1.0.0",
+    "fs-extra": "^0.26.5"
   },
   "devDependencies": {
     "mocha": "~2.4.2",

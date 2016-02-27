@@ -1,52 +1,43 @@
 'use strict';
 
-var fs,
-    Prom = require('any-promise'),
-    slice = Array.prototype.slice,
-    noError = /exists/,
-    returnValue = /Sync$|watch|(Read|Write)Stream$|^Stats$/;
+var fs = require('fs-extra');
+var Promise = require('any-promise');
+var slice = Array.prototype.slice;
 
-try {
-  fs = require('fs-extra');
-} catch(e) {
-  try {
-    fs = require('graceful-fs');
-  } catch(e2){
-    fs = require('fs');
-  }
-}
+var keys = Object.keys(fs);
+var promiseKeys = ['access', 'readFile', 'close', 'open', 'read', 'write', 'rename', 'truncate', 'ftruncate', 'rmdir', 'fdatasync', 'fsync', 'mkdir', 'readdir', 'fstat', 'lstat', 'stat', 'readlink', 'symlink', 'link', 'unlink', 'fchmod', 'lchmod', 'chmod', 'lchown', 'fchown', 'chown', '_toUnixTimestamp', 'utimes', 'futimes', 'writeFile', 'appendFile', 'realpath', 'lutimes', 'gracefulify', 'copy', 'mkdirs', 'mkdirp', 'ensureDir', 'remove', 'readJson', 'readJSON', 'writeJson', 'writeJSON', 'outputJson', 'outputJSON', 'move', 'createOutputStream', 'emptyDir', 'emptydir', 'createFile', 'ensureFile', 'createLink', 'ensureLink', 'createSymlink', 'ensureSymlink', 'outputFile', 'walk'];
+var noErrorKeys = ['exists'];
 
-Object.keys(fs).forEach(function(key) {
+keys.forEach(function (key) {
   var func = fs[key];
-  if (typeof func == 'function')
-    if(returnValue.test(key)){
-      exports[key] = fs[key];
-    } else if(noError.test(key)){
-      exports[key] = promiseWithoutError(func);
-    } else {
-      exports[key] = promise(func);
-    }
-});
 
-function promise(func){
-  return function(){
-    var args = slice.call(arguments);
-    return new Prom(function(resolve, reject){
-      args.push(function(err, res){
-        if(err) reject(err);
-        else resolve(res);
+  if (promiseKeys.indexOf(key) !== -1) {
+    exports[key] = function () {
+      var args = slice.call(arguments);
+
+      return new Promise(function (resolve, reject) {
+        args.push(function(error, response) {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+
+        func.apply(fs, args);
       });
-      func.apply(fs, args);
-    });
-  };
-}
+    };
+  } else if (noErrorKeys.indexOf(key) !== -1) {
+    exports[key] = function () {
+      var args = slice.call(arguments);
 
-function promiseWithoutError(func){
-  return function(){
-    var args = slice.call(arguments);
-    return new Prom(function(resolve){
-      args.push(resolve);
-      func.apply(fs, args);
-    });
-  };
-}
+      return new Promise(function (resolve) {
+        args.push(resolve);
+
+        func.apply(fs, args);
+      });
+    };
+  } else {
+    exports[key] = func;
+  }
+});
