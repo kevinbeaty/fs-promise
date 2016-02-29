@@ -5,7 +5,8 @@ var Promise = require('any-promise');
 var slice = Array.prototype.slice;
 
 var keys = Object.keys(fs);
-var promiseKeys = ['access', 'readFile', 'close', 'open', 'read', 'write', 'rename', 'truncate', 'ftruncate', 'rmdir', 'fdatasync', 'fsync', 'mkdir', 'readdir', 'fstat', 'lstat', 'stat', 'readlink', 'symlink', 'link', 'unlink', 'fchmod', 'lchmod', 'chmod', 'lchown', 'fchown', 'chown', '_toUnixTimestamp', 'utimes', 'futimes', 'writeFile', 'appendFile', 'realpath', 'lutimes', 'gracefulify', 'copy', 'mkdirs', 'mkdirp', 'ensureDir', 'remove', 'readJson', 'readJSON', 'writeJson', 'writeJSON', 'outputJson', 'outputJSON', 'move', 'createOutputStream', 'emptyDir', 'emptydir', 'createFile', 'ensureFile', 'createLink', 'ensureLink', 'createSymlink', 'ensureSymlink', 'outputFile', 'walk'];
+var promiseKeys = ['access', 'readFile', 'close', 'open', 'read', 'write', 'rename', 'truncate', 'ftruncate', 'rmdir', 'fdatasync', 'fsync', 'mkdir', 'readdir', 'fstat', 'lstat', 'stat', 'readlink', 'symlink', 'link', 'unlink', 'fchmod', 'lchmod', 'chmod', 'lchown', 'fchown', 'chown', '_toUnixTimestamp', 'utimes', 'futimes', 'writeFile', 'appendFile', 'realpath', 'lutimes', 'gracefulify', 'copy', 'mkdirs', 'mkdirp', 'ensureDir', 'remove', 'readJson', 'readJSON', 'writeJson', 'writeJSON', 'outputJson', 'outputJSON', 'move', 'createOutputStream', 'emptyDir', 'emptydir', 'createFile', 'ensureFile', 'createLink', 'ensureLink', 'createSymlink', 'ensureSymlink', 'outputFile'];
+var streamKeys = ['walk'];
 var noErrorKeys = ['exists'];
 
 keys.forEach(function (key) {
@@ -35,6 +36,26 @@ keys.forEach(function (key) {
         args.push(resolve);
 
         func.apply(fs, args);
+      });
+    };
+  } else if (streamKeys.indexOf(key) !== -1) {
+    exports[key] = function () {
+      var args = slice.call(arguments);
+
+      return new Promise(function (resolve, reject) {
+        var stream = func.apply(fs, args);
+        var items = [];
+
+        stream
+          .on('data', function (item) {
+            items.push(item);
+          })
+          .on('end', function () {
+            resolve(items);
+          })
+          .on('error', function (error) {
+            reject(error);
+          });
       });
     };
   } else {
