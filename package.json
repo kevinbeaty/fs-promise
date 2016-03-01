@@ -1,6 +1,6 @@
 {
   "name": "fs-promise",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Filesystem methods as promises with fs-extra",
   "main": "index.js",
   "scripts": {
@@ -20,17 +20,16 @@
   "license": "MIT",
   "dependencies": {
     "any-promise": "^1.0.0",
-    "fs-extra": "^0.26.5"
+    "fs-extra": "^0.26.5",
+    "mz": "^2.3.1",
+    "thenify-all": "^1.6.0"
   },
   "devDependencies": {
     "mocha": "~2.4.2",
-    "fs-extra": "~0.26.5",
-    "promise": "~7.1.1",
     "es6-promise": "~3.0.2",
     "rsvp": "~3.1.0",
     "bluebird": "~3.1.5",
     "when": "~3.7.7",
-    "q": "~1.4.1",
-    "native-promise-only": "~0.8.1"
+    "q": "~1.4.1"
   }
 }
