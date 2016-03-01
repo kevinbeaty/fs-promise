@@ -1,64 +1,101 @@
-'use strict';
+'use strict'
 
-var fs = require('fs-extra');
-var Promise = require('any-promise');
-var slice = Array.prototype.slice;
+var mzfs = require('mz/fs')
+var fsExtra = require('fs-extra')
+var Promise = require('any-promise')
+var thenifyAll = require('thenify-all')
+var slice = Array.prototype.slice
 
-var keys = Object.keys(fs);
-var promiseKeys = ['access', 'readFile', 'close', 'open', 'read', 'write', 'rename', 'truncate', 'ftruncate', 'rmdir', 'fdatasync', 'fsync', 'mkdir', 'readdir', 'fstat', 'lstat', 'stat', 'readlink', 'symlink', 'link', 'unlink', 'fchmod', 'lchmod', 'chmod', 'lchown', 'fchown', 'chown', '_toUnixTimestamp', 'utimes', 'futimes', 'writeFile', 'appendFile', 'realpath', 'lutimes', 'gracefulify', 'copy', 'mkdirs', 'mkdirp', 'ensureDir', 'remove', 'readJson', 'readJSON', 'writeJson', 'writeJSON', 'outputJson', 'outputJSON', 'move', 'createOutputStream', 'emptyDir', 'emptydir', 'createFile', 'ensureFile', 'createLink', 'ensureLink', 'createSymlink', 'ensureSymlink', 'outputFile'];
-var streamKeys = ['walk'];
-var noErrorKeys = ['exists'];
+// thenify-all for all fs-extra that make sense to be promises
+var fsExtraKeys = [
+  'copy',
+  'emptyDir',
+  'ensureFile',
+  'ensureDir',
+  'ensureLink',
+  'ensureSymlink',
+  'mkdirs',
+  'move',
+  'outputFile',
+  'outputJson',
+  'readJson',
+  'remove',
+  'writeJson',
+  // aliases
+  'createFile',
+  'createLink',
+  'createSymlink',
+  'emptydir',
+  'mkdirp',
+  'readJSON',
+  'outputJSON',
+  'writeJSON'
+]
+thenifyAll.withCallback(fsExtra, exports, fsExtraKeys)
 
-keys.forEach(function (key) {
-  var func = fs[key];
+// Delegate all normal fs to mz/fs
+// (this overwrites anything proxies directly above)
+var mzKeys = [
+  'rename',
+  'ftruncate',
+  'chown',
+  'fchown',
+  'lchown',
+  'chmod',
+  'fchmod',
+  'stat',
+  'lstat',
+  'fstat',
+  'link',
+  'symlink',
+  'readlink',
+  'realpath',
+  'unlink',
+  'rmdir',
+  'mkdir',
+  'readdir',
+  'close',
+  'open',
+  'utimes',
+  'futimes',
+  'fsync',
+  'write',
+  'read',
+  'readFile',
+  'writeFile',
+  'appendFile',
+  'access',
+  'exists'
+]
+mzKeys.forEach(function(key){
+  exports[key] = mzfs[key]
+})
 
-  if (promiseKeys.indexOf(key) !== -1) {
-    exports[key] = function () {
-      var args = slice.call(arguments);
 
-      return new Promise(function (resolve, reject) {
-        args.push(function(error, response) {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(response);
-          }
-        });
+// Resolve fs-extra streams as Promise for array
+var streamKeys = [
+  'walk'
+]
 
-        func.apply(fs, args);
-      });
-    };
-  } else if (noErrorKeys.indexOf(key) !== -1) {
-    exports[key] = function () {
-      var args = slice.call(arguments);
+streamKeys.forEach(function(key){
+  exports[key] = function(){
+    var func = fsExtra[key]
+    var args = slice.call(arguments)
 
-      return new Promise(function (resolve) {
-        args.push(resolve);
+    return new Promise(function(resolve, reject){
+      var stream = func.apply(fsExtra, args)
+      var items = []
 
-        func.apply(fs, args);
-      });
-    };
-  } else if (streamKeys.indexOf(key) !== -1) {
-    exports[key] = function () {
-      var args = slice.call(arguments);
-
-      return new Promise(function (resolve, reject) {
-        var stream = func.apply(fs, args);
-        var items = [];
-
-        stream
-          .on('data', function (item) {
-            items.push(item);
-          })
-          .on('end', function () {
-            resolve(items);
-          })
-          .on('error', function (error) {
-            reject(error);
-          });
-      });
-    };
-  } else {
-    exports[key] = func;
+      stream
+        .on('data', function(item){
+          items.push(item)
+        })
+        .on('end', function(){
+          resolve(items)
+        })
+        .on('error', function(error){
+          reject(error)
+        })
+    })
   }
-});
+})

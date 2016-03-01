@@ -1,11 +1,12 @@
 'use strict';
 /*globals describe, it, beforeEach, afterEach */
-
 var fsp = require('..'),
     path = require('path'),
     assert = require('assert'),
     Prom = require('any-promise'),
-    testdir = path.join(__dirname, 'tmp');
+    testdir = path.join(__dirname, 'tmp'),
+    testdir2 = path.join(__dirname, 'tmp2')
+
 
 describe('basic', function(){
   beforeEach(function(){
@@ -17,19 +18,40 @@ describe('basic', function(){
   });
 
   it('should create files and readdir', function(){
-    return fsp.createFile(file('hello')).then(readtmp).then(function(files){
+    return fsp.ensureFile(file('hello')).then(readtmp).then(function(files){
       assert.deepEqual(files.sort(), ['hello']);
-      return fsp.createFile(file('world'));
+      return fsp.ensureFile(file('world'));
     }).then(readtmp).then(function(files){
       assert.deepEqual(files.sort(), ['hello', 'world']);
-    });
+      return fsp.exists(testdir2)
+    }).then(function(exists){
+      assert.equal(exists, false);
+      return fsp.move(testdir, testdir2)
+    }).then(function(){
+      return Prom.all([fsp.exists(testdir), fsp.exists(testdir2)])
+    }).then(function(exists){
+      return assert.deepEqual(exists, [false, true])
+    }).then(function(){
+      return fsp.copy(testdir2, testdir)
+    }).then(function(){
+      return Prom.all([fsp.exists(testdir), fsp.exists(testdir2)])
+    }).then(function(exists){
+      return assert.deepEqual(exists, [true, true])
+    }).then(readtmps).then(function(files){
+      assert.deepEqual(files[0].sort(), files[1].sort());
+      return fsp.emptyDir(testdir2);
+    }).then(readtmp2).then(function(files){
+      assert.deepEqual(files, []);
+    }).then(function(){
+      fsp.remove(testdir2);
+    })
   });
 
   it('should pass through Sync as value', function(){
-    return fsp.createFile(file('hello')).then(function(files){
+    return fsp.ensureFile(file('hello')).then(function(files){
       assert(fsp.existsSync(file('hello')));
       assert(!fsp.existsSync(file('world')));
-      return fsp.createFile(file('world'));
+      return fsp.ensureFile(file('world'));
     }).then(readtmp).then(function(files){
       assert(fsp.existsSync(file('hello')));
       assert(fsp.existsSync(file('world')));
@@ -56,6 +78,31 @@ describe('basic', function(){
       assert.equal(contents, 'hello world');
     });
   });
+
+  it('should pass third argument from write #7', function testWriteFsp() {
+    return fsp.open(file('some.txt'), 'w+').then(function (fd){
+      return fsp.write(fd, "hello fs-promise").then(function(result) {
+        var written = result[0];
+        var text = result[1];
+        assert.equal(text.substring(0, written), "hello fs-promise".substring(0, written))
+        return fsp.close(fd);
+      })
+    })
+  });
+
+  it('should create files and walk #9', function(){
+    return fsp.ensureFile(file('hello')).then(readtmp).then(function(files){
+      assert.deepEqual(files.sort(), ['hello']);
+      return fsp.ensureFile(file('world'));
+    }).then(readtmp).then(function(files){
+      assert.deepEqual(files.sort(), ['hello', 'world']);
+    }).then(function(){
+      return fsp.walk(testdir);
+    }).then(function(items){
+      // tmp, tmp/hello tmp/world
+      assert.equal(items.length, 3);
+    });
+  });
 });
 
 function file(){
@@ -74,4 +121,12 @@ function existstmp(shouldExist){
 
 function readtmp(){
   return fsp.readdir(testdir);
+}
+
+function readtmp2(){
+  return fsp.readdir(testdir2);
+}
+
+function readtmps(){
+  return Prom.all([readtmp(), readtmp2()]);
 }

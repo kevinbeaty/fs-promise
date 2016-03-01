@@ -2,11 +2,6 @@
 
 [![Build Status](https://secure.travis-ci.org/kevinbeaty/fs-promise.svg)](http://travis-ci.org/kevinbeaty/fs-promise)
 
-Proxies all async [`fs`][1] and [`fs-extra`][2] methods exposing them as ES 2015 (ES6) compatible promises.
-
-Passes all sync methods through as values.
-
-Uses [any-promise][3] to load preferred `Promise` implementation.
 
 ```javascript
 var fsp = require('fs-promise');
@@ -16,6 +11,34 @@ fsp.writeFile(file('hello1'), 'hello world')
     return fsp.readFile(file('hello1'), {encoding:'utf8'});
   })
   .then(function(contents){});
+```
+
+## Implementation
+
+`fs-promise` is now a thin wrapper on top of [`mz/fs`][4] adding support for async functions from [`fs-extra`][2]. If you do not need the functions from `fs-extra`, consider using `mz` directly.
+
+* Proxies async [`fs`][1] and [`fs-extra`][2] methods exposing them as ES 2015 (ES6) compatible promises.
+* Uses [any-promise][3] to load preferred `Promise` implementation.
+* Directly uses [mz/fs][4] for all `fs` functions.
+* Proxies `walk` from `fs-extra` to resolve Promise as arrays of items.
+* Proxies the following functions from fs-extra using [thenify-all][5]. (Proxies all other functions directly).
+
+```javascript
+[
+  'copy',
+  'emptyDir',
+  'ensureFile',
+  'ensureDir',
+  'ensureLink'
+  'ensureSymlink',
+  'mkdirs',
+  'move',
+  'outputFile',
+  'outputJson',
+  'readJson',
+  'remove',
+  'writeJson'
+]
 ```
 
 ## Usage
@@ -33,3 +56,5 @@ Note that `fs-extra` depends on `graceful-fs`, so you will get the benefits of b
 [1]: https://nodejs.org/api/fs.html
 [2]: https://www.npmjs.org/package/fs-extra
 [3]: https://github.com/kevinbeaty/any-promise
+[4]: https://github.com/normalize/mz
+[5]: https://github.com/thenables/thenify-all
