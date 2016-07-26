@@ -6,9 +6,9 @@
 ```javascript
 var fsp = require('fs-promise');
 
-fsp.writeFile(file('hello1'), 'hello world')
+fsp.writeFile('/tmp/hello1.txt'), 'hello world')
   .then(function(){
-    return fsp.readFile(file('hello1'), {encoding:'utf8'});
+    return fsp.readFile('/tmp/hello1.txt'), {encoding:'utf8'});
   })
   .then(function(contents){});
 ```
