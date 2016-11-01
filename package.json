@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "any-promise": "^1.0.0",
-    "fs-extra": "^0.26.5",
+    "fs-extra": "^1.0.0",
     "mz": "^2.3.1",
     "thenify-all": "^1.6.0"
   },
