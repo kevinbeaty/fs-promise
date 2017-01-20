@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 export * from "mz/fs";
+export * from "fs-extra";
 
 export interface WriteOptions {
     encoding?: string;
