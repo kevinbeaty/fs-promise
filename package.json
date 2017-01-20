@@ -19,6 +19,7 @@
   "author": "Kevin Beaty",
   "license": "MIT",
   "dependencies": {
+    "@types/mz": "0.0.30",
     "any-promise": "^1.3.0",
     "fs-extra": "^2.0.0",
     "mz": "^2.6.0",
