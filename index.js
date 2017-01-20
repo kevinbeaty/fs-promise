@@ -70,32 +70,3 @@ var mzKeys = [
 mzKeys.forEach(function(key){
   exports[key] = mzfs[key]
 })
-
-
-// Resolve fs-extra streams as Promise for array
-var streamKeys = [
-  'walk'
-]
-
-streamKeys.forEach(function(key){
-  exports[key] = function(){
-    var func = fsExtra[key]
-    var args = slice.call(arguments)
-
-    return new Promise(function(resolve, reject){
-      var stream = func.apply(fsExtra, args)
-      var items = []
-
-      stream
-        .on('data', function(item){
-          items.push(item)
-        })
-        .on('end', function(){
-          resolve(items)
-        })
-        .on('error', function(error){
-          reject(error)
-        })
-    })
-  }
-})

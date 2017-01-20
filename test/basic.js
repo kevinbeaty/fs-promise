@@ -90,19 +90,6 @@ describe('basic', function(){
     })
   });
 
-  it('should create files and walk #9', function(){
-    return fsp.ensureFile(file('hello')).then(readtmp).then(function(files){
-      assert.deepEqual(files.sort(), ['hello']);
-      return fsp.ensureFile(file('world'));
-    }).then(readtmp).then(function(files){
-      assert.deepEqual(files.sort(), ['hello', 'world']);
-    }).then(function(){
-      return fsp.walk(testdir);
-    }).then(function(items){
-      // tmp, tmp/hello tmp/world
-      assert.equal(items.length, 3);
-    });
-  });
 });
 
 function file(){
