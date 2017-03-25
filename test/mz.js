@@ -1,4 +1,4 @@
-// Tests from mz.  License MIT 
+// Tests from mz.  License MIT
 // https://github.com/normalize/mz
 var assert = require('assert')
 
@@ -8,6 +8,14 @@ describe('fs', function () {
   it('.stat()', function (done) {
     fs.stat(__filename).then(function (stats) {
       assert.equal(typeof stats.size, 'number')
+      done()
+    }).catch(done)
+  })
+
+  it('.mkdtemp()', function (done) {
+    if (!require('fs').mkdtemp) this.skip()
+    fs.mkdtemp('/tmp/').then(function (folder) {
+      fs.rmdirSync(folder)
       done()
     }).catch(done)
   })
