@@ -53,20 +53,24 @@ var mzKeys = [
   'unlink',
   'rmdir',
   'mkdir',
+  'mkdtemp',
   'readdir',
   'close',
   'open',
   'utimes',
   'futimes',
   'fsync',
+  'fdatasync',
   'write',
   'read',
   'readFile',
   'writeFile',
   'appendFile',
   'access',
+  'truncate',
   'exists'
 ]
+
 mzKeys.forEach(function(key){
   exports[key] = mzfs[key]
 })
