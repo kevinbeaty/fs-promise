@@ -20,7 +20,6 @@ fsp.writeFile('/tmp/hello1.txt', 'hello world')
 * Proxies async [`fs`][1] and [`fs-extra`][2] methods exposing them as ES 2015 (ES6) compatible promises.
 * Uses [any-promise][3] to load preferred `Promise` implementation.
 * Directly uses [mz/fs][4] for all `fs` functions.
-* Proxies `walk` from `fs-extra` to resolve Promise as arrays of items.
 * Proxies the following functions from fs-extra using [thenify-all][5]. (Proxies all other functions directly).
 
 ```javascript
