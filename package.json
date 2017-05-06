@@ -1,7 +1,7 @@
 {
   "name": "fs-promise",
-  "version": "2.0.2",
-  "description": "Filesystem methods as promises with fs-extra",
+  "version": "2.0.3",
+  "description": "[DEPRECATED] Use mz or fs-extra^3.0 with Promise Support",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
