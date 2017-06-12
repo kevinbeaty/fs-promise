@@ -28,7 +28,7 @@
     "@types/fs-extra": "0.0.37",
     "@types/mz": "0.0.30",
     "mocha": "^3.0.0",
-    "es6-promise": "^4.0.0",
+    "es6-promise": "^4.1.0",
     "rsvp": "^3.0.0",
     "bluebird": "^3.0.0",
     "when": "^3.0.0",
